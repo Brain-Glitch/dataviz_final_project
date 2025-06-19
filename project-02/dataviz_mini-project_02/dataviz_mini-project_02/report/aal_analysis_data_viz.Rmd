@@ -1,0 +1,130 @@
+---
+title: "Data Visualization - Mini-Project 2"
+author: "Firstname Lastname `email@email.com`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(tidyverse)
+#install.packages("dygraphs")  # Install
+library("viridis")
+library(sf)
+library(dygraphs)
+```
+
+```{r}
+birth_data <- read_csv("../data/us_births_00_14.csv", col_types = cols())
+numeric_birth_data <- birth_data %>% 
+  select(year | month | date_of_month | births) 
+numeric_birth_data %>% 
+  cor() %>% 
+  signif(digits = 2)
+mean_week <- birth_data %>% 
+  group_by(day_of_week) %>% 
+  summarise(w_mean = mean(births))
+mean_week$w_mean <- floor(mean_week$w_mean)
+mean_week
+mean_month <- birth_data %>% 
+  group_by(date_of_month) %>% 
+  summarise(m_mean = mean(births)) %>% 
+  floor()
+mean_month
+birth_data <- birth_data %>% 
+  left_join(mean_month, by = "date_of_month") %>% 
+  right_join(mean_week, by = "day_of_week")
+```
+
+```{r}
+marathon_results <- read_csv("../data/marathon_results_2017.csv", col_types = cols())
+marathon_updated <- marathon_results %>% 
+  rename(ISO_A3 = Country) %>% 
+  count(ISO_A3)
+marathon_updated
+world_shapes <- read_sf("../data/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
+runner_map <- world_shapes %>%
+  left_join(marathon_updated, by = "ISO_A3") %>%
+  filter(ISO_A3 != "ATA") 
+runner_map
+```
+
+```{r}
+filtered_map <- runner_map
+filtered_countries <- filtered_map %>% 
+  filter(n > 500)
+filtered_map$n[filtered_map$n > 500] <- NA
+ggplot(data = filtered_map) + 
+  geom_sf(mapping = aes(fill = n)) + 
+  geom_sf(data = filtered_countries, fill = "Dark Green", color = "#333333") +
+  labs(title = "Nunber of Boston Marathon Runners Per Country in 2017, up to 400",
+       x = NULL,
+       y = NULL) + 
+  scale_fill_gradient(name = "Runners") + 
+  annotate(geom = "label", x = -165, y = 40, label = "Green > 400", fill = "Dark Green") + 
+  annotate(geom = "label", x = 30, y = -50, 
+           label = "Grey Didn't Participate", fill = "#7f7f7f") + 
+  annotate(geom = "text", label = "20945", font = 10, x = -105, y = 40) + 
+  annotate(geom = "text", label = "1870", font = 10, x = -110, y = 60) +
+  theme( axis.text.x = element_blank(),
+         axis.text.y = element_blank(),
+         axis.ticks = element_blank())
+
+```
+
+```{r}
+birth_line <- dygraph(birth_data %>% select(date | w_mean | births | m_mean),
+                      main = "US Births per Day") %>% 
+  dyRangeSelector(height = 20) %>% 
+  dySeries("w_mean", label = "Average Week") %>% 
+  dySeries("births", label = "Births") %>% 
+  dySeries("m_mean", label = "Average Month")
+birth_line
+htmlwidgets::saveWidget(birth_line, "birth_line.html")
+```
+
+```{r}
+births_cor <- birth_data %>%
+  select(m_mean, w_mean, births) %>% 
+  rename(Births = births) %>% 
+  rename(Average_Month = m_mean) %>% 
+  rename(Average_Week = w_mean) %>% 
+  cor()
+# only consider upper triangular part of
+# correlation matrix
+births_cor[lower.tri(births_cor)] <- NA
+# format the matrix of correlation
+births_cor_long <- births_cor %>%
+  as.data.frame() %>%
+  rownames_to_column("Variable2") %>%
+  pivot_longer(cols = -Variable2,
+               names_to = "Variable1",
+               values_to = "cor") %>%
+  mutate(nice_cor = round(cor, 2)) %>%
+  mutate(Variable1 = fct_inorder(Variable1),
+         Variable2 = fct_inorder(Variable2)) %>%
+  filter(!is.na(cor)) %>%
+  filter(Variable1 == "Births") %>% 
+  filter(Variable2 != Variable1)
+ggplot(births_cor_long,
+       aes(x = Variable2,
+           y = Variable1,
+           fill = cor)) +
+  geom_tile() +
+  geom_text(aes(label = nice_cor)) +
+  scale_fill_gradient2(
+    low = "#3B9AB2",
+    mid = "#F63719",
+    high = "Light Green",
+    limits = c(-1, 1)) +
+  labs(x = NULL, 
+       y = NULL, 
+       title = "Effect of Day of Week VS Day of Month on Birth Rate",
+       fill = "Correlation Index") +
+  scale_y_discrete(labels = c("Births")) +
+  scale_x_discrete(labels = c("Average Month", "Average Week")) +
+  coord_equal() +
+  theme_minimal() +
+  theme(panel.grid = element_blank())
+```
+

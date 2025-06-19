@@ -1,0 +1,106 @@
+---
+title: "Data Visualization - Mini-Project 1"
+author: "Eric Weakley `eweakley1379@floridapoly.edu`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(tidyverse)
+#install.packages("viridis")  # Install
+library("viridis")
+```
+```{r}
+traffic_MN <- read_csv("../data/trafficMN.csv", col_types = cols())
+traffic_MN %>%
+  count(holiday)
+traffic_by_holiday <- traffic_MN %>% 
+  group_by(holiday) %>% 
+  summarize(mean = mean(traffic_volume))
+traffic_on_holidays <- traffic_MN %>% 
+  filter(holiday != "None") %>% 
+  group_by(year = lubridate::floor_date(date_time, "year"))
+traffic_on_holidays
+traffic_MN %>%
+  count(weather_main)
+traffic_by_weather <- traffic_MN %>%
+  filter(weather_main != "Squall") %>% 
+  filter(weather_main != "Smoke")
+```
+
+> With this data, I found an interesting correlation between the holiday and the number of cars on the road. Namely, that less cars drive on holidays.
+
+
+```{r}
+ggplot(data = traffic_by_holiday) +
+  geom_col(mapping = aes(x = holiday,
+                         y = mean)) + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle=15, hjust=1)) + 
+  labs(title = "Mean Traffic Volume on Each Holiday",
+       x = "",
+       y = "")
+```
+
+> This illustrates the trend where cars travel less on holidays.
+
+```{r}
+ggplot(data = traffic_on_holidays,
+       aes(x = year,
+           y = traffic_volume,
+           group = holiday,
+           color = holiday)) +
+  geom_line(size = 1) + 
+  geom_text(data = subset(traffic_on_holidays, year == 2016), aes(label = holiday, colour = holiday, x = year, y = traffic_volume), hjust = -.1) + 
+  scale_color_viridis(discrete = TRUE, option = "A")
+```
+
+> This shows how many cars traveled on each holiday each year. While it is very inconsistent, some holidays, like Columbus day, have far less traffic than others, like New Years Day
+
+```{r}
+traffic_around_Christmas <- traffic_MN %>% 
+  mutate(month = format(date_time, "%m"),
+         day = format(date_time, "%d"),
+         year = format(date_time, "%y"),
+         hour = hour(date_time)) %>% 
+  filter(month == 12) %>% 
+  filter(day %in% c(23,24,25,26,27))
+traffic_on_Christmas <- traffic_around_Christmas %>% 
+  filter(day == "25")
+
+year_vals <- c(
+  "12" = "2012",
+  "13" = "2013",
+  "15" = "2015",
+  "16" = "2016",
+  "17" = "2017"
+)
+
+ggplot(data = traffic_on_Christmas,
+       aes(x = hour,
+           y = traffic_volume)) + 
+  geom_point() + 
+  facet_wrap(vars(year),labeller = labeller(year = year_vals)) + 
+  labs(title = "Traffic Volume on Hour Since Midnight, Christmas",
+       x = "",
+       y = "")
+```
+
+> This illustrates the problem with the discovered trend. Depending on when "Christmas" is regestered as, there could be up to a 3000 car difference.
+
+```{r}
+ggplot(data = traffic_around_Christmas,
+       aes(x = hour,
+           y = traffic_volume)) + 
+  geom_point() + 
+  facet_grid(year ~ day, labeller = labeller(year = year_vals)) + 
+  theme_classic() + 
+  labs(title = "Traffic Volume per Hour on Days in December",
+       x = "",
+       y = "")
+
+
+```
+
+> This is the actual distribution of card on the road on Christmas vs. the days around Christmas. In truth, while there is a small dip, it is minor compared to what the bar chart displayed. There are confounding factors that made this look worse than it was.

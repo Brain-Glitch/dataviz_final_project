@@ -8,7 +8,7 @@ output:
 
 ```{r}
 library(tidyverse)
-install.packages("sf")  # Install
+#install.packages("sf")  # Install
 library("viridis")
 library(sf)
 library(dygraphs)

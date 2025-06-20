@@ -12,7 +12,7 @@ library(tidyverse)
 library("viridis")
 ```
 ```{r}
-traffic_MN <- read_csv("../data/trafficMN.csv", col_types = cols())
+traffic_MN <- read_csv("../../data/trafficMN.csv", col_types = cols())
 traffic_MN %>%
   count(holiday)
 traffic_by_holiday <- traffic_MN %>% 

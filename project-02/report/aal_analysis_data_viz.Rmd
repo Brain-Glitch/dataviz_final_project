@@ -8,14 +8,14 @@ output:
 
 ```{r}
 library(tidyverse)
-#install.packages("dygraphs")  # Install
+install.packages("sf")  # Install
 library("viridis")
 library(sf)
 library(dygraphs)
 ```
 
 ```{r}
-birth_data <- read_csv("../data/us_births_00_14.csv", col_types = cols())
+birth_data <- read_csv("../../data/us_births_00_14.csv", col_types = cols())
 numeric_birth_data <- birth_data %>% 
   select(year | month | date_of_month | births) 
 numeric_birth_data %>% 
@@ -37,12 +37,12 @@ birth_data <- birth_data %>%
 ```
 
 ```{r}
-marathon_results <- read_csv("../data/marathon_results_2017.csv", col_types = cols())
+marathon_results <- read_csv("../../data/marathon_results_2017.csv", col_types = cols())
 marathon_updated <- marathon_results %>% 
   rename(ISO_A3 = Country) %>% 
   count(ISO_A3)
 marathon_updated
-world_shapes <- read_sf("../data/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
+world_shapes <- read_sf("../../data/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
 runner_map <- world_shapes %>%
   left_join(marathon_updated, by = "ISO_A3") %>%
   filter(ISO_A3 != "ATA") 

@@ -36,6 +36,8 @@ birth_data <- birth_data %>%
   right_join(mean_week, by = "day_of_week")
 ```
 
+>The data preprocessing for birth rate correlations involved creating mean data sets for both "births per week" and "births on a certain day of the month" (a control variable). Then, merge those datasets with the births each day using join to iterate the patterns across all 17 years. This data was used to create the dynamic line chart, while a copy of it was turned into a correlation matrix for the visualization component.
+
 ```{r}
 marathon_results <- read_csv("../../data/marathon_results_2017.csv", col_types = cols())
 marathon_updated <- marathon_results %>% 
@@ -48,6 +50,8 @@ runner_map <- world_shapes %>%
   filter(ISO_A3 != "ATA") 
 runner_map
 ```
+
+>The data preprocessing for Boston Marathon Runners started with renaming the "Country" column to reflect the country codes in my shapes data set. Then, I appended both together to create a chart table of countries and the number of people from there who participated in the 2017 Boston Marathon. The trick was that a gradient scale got thrown off by Canada and America having 4 and 50 times the representation of the third most represented nation, respectively. To solve for this, I split my dataset in two, allowing me to show the relation between smaller countries easier while using a unique color for countries far above the norm.
 
 ```{r}
 filtered_map <- runner_map
@@ -71,6 +75,8 @@ ggplot(data = filtered_map) +
          axis.ticks = element_blank())
 
 ```
+
+>The Boston Marathon map paints an interesting picture about American cultural centrism, especially among developed nations. The fact that a national competition had participation from every continent and significant participation from countries like China and Australia illustrates how visible American events are on the international stage.
 
 ```{r}
 birth_line <- dygraph(birth_data %>% select(date | w_mean | births | m_mean),
@@ -128,3 +134,4 @@ ggplot(births_cor_long,
   theme(panel.grid = element_blank())
 ```
 
+>The birth rate line chart and associated correlation matrix show that people don't like having children on weekends, but do not care what time of the month a child's birthday lands on. It does so in two distinct ways, and comparing those methods allows us to visualize what correlation truly means. The correlation matrix, specifically, says that day of the week is a far stronger predictor of Birth Rate than month of the year.

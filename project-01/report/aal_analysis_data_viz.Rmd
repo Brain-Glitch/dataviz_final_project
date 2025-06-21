@@ -10,6 +10,7 @@ output:
 library(tidyverse)
 #install.packages("viridis")  # Install
 library("viridis")
+library(RColorBrewer)
 ```
 ```{r}
 traffic_MN <- read_csv("../../data/trafficMN.csv", col_types = cols())
@@ -35,12 +36,15 @@ traffic_by_weather <- traffic_MN %>%
 ```{r}
 ggplot(data = traffic_by_holiday) +
   geom_col(mapping = aes(x = holiday,
-                         y = mean)) + 
+                         y = mean, 
+                         fill = holiday)) + 
   theme_classic() + 
   theme(axis.text.x = element_text(angle=15, hjust=1)) + 
   labs(title = "Mean Traffic Volume on Each Holiday",
        x = "",
-       y = "")
+       y = "") + 
+  scale_fill_discrete(type = "viridis") + 
+  theme(legend.position = "None")
 ```
 
 > This illustrates the trend where cars travel less on holidays.
@@ -67,7 +71,7 @@ traffic_around_Christmas <- traffic_MN %>%
   filter(month == 12) %>% 
   filter(day %in% c(23,24,25,26,27))
 traffic_on_Christmas <- traffic_around_Christmas %>% 
-  filter(day == "25")
+  filter(day == 25)
 
 year_vals <- c(
   "12" = "2012",
@@ -79,27 +83,37 @@ year_vals <- c(
 
 ggplot(data = traffic_on_Christmas,
        aes(x = hour,
-           y = traffic_volume)) + 
+           y = traffic_volume,
+           color = year)) + 
   geom_point() + 
   facet_wrap(vars(year),labeller = labeller(year = year_vals)) + 
   labs(title = "Traffic Volume on Hour Since Midnight, Christmas",
        x = "",
-       y = "")
+       y = "") + 
+  theme_bw() + 
+  scale_color_discrete(type = "viridis") + 
+  theme(legend.position = "None")
 ```
 
 > This illustrates the problem with the discovered trend. Depending on when "Christmas" is regestered as, there could be up to a 3000 car difference.
 
 ```{r}
+al_val <- 0.2
+
 ggplot(data = traffic_around_Christmas,
        aes(x = hour,
-           y = traffic_volume)) + 
+           y = traffic_volume,
+           color = year,
+           alpha = factor(day))) + 
   geom_point() + 
   facet_grid(year ~ day, labeller = labeller(year = year_vals)) + 
   theme_classic() + 
   labs(title = "Traffic Volume per Hour on Days in December",
        x = "",
-       y = "")
-
+       y = "") + 
+  scale_color_discrete(type = "viridis") + 
+  theme(legend.position = "None") + 
+  scale_alpha_manual(limits = c("23", "24", "25", "26", "27"), values = c(al_val,al_val,1,al_val,al_val))
 
 ```
 

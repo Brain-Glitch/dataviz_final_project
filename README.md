@@ -1,6 +1,6 @@
 # Data Visualization and Reproducible Research
 
-> Firstname Lastname. 
+> Eric Weakley. 
 
 
 The following is a sample of products created during the _"Data Visualization and Reproducible Research"_ course.
@@ -8,36 +8,33 @@ The following is a sample of products created during the _"Data Visualization an
 
 ## Project 01
 
-In the `project_01/` folder you can find... _[add short description of your revised project here]_
+In the `project_01/` folder you can find an analysis of how holidays affect traffic, and how the data set lies about that fact.
 
 **Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/echarts.png" width="70%" height="70%">
-
+![Traffic around Christmas](./figures/pr_1_chart.JPG)
 
 ## Project 02
 
-In this project, I explored ... _[short description of your revised project goes here]_ Find the code and report in the `project_02/` folder.
+In this project, I explored trends in birth rates and countries that participated in the Boston Marathon. Find the code and report in the `project_02/` folder.
 
 **Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/fl_higher_ed.png" width="80%" height="80%">
+![Boston Marathon Runners per Country](./figures/pr_2_chart.JPG)
 
 (you can place your figures in the `figures/` folder and use the `![](path_to_picture)` option to add the pictures here)
 
 
 ## Project 03
 
-In this project, I explored ... _[short description of the data visualizations you for this part of the project produced goes here]_
+In this project, I explored various causes of concrete compression strength and various temperature metrics in Tampa.
 
 **Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://raw.githubusercontent.com/aalhamadani/dataviz_final_project/main/figures/concrete_density.png" width="80%" height="80%">
+![Relationships Between Various Concrete Metrics](./figures/pr_3_chart.JPG)
 
 
 ### Moving Forward
 
-_Please add here a short reflection on what you learned and what you plan to continue exploring in terms of data visualization, data storytelling, reproducible research, and/or related topics._
+The primary thing this course taught me was syntax, with a side of creative problem solving when I had to find syntax to make a chart do something it does not do automatically. This is a surprisingly useful tool to take into a workplace, as the ability to programatically create these images using tilable components puts me leagues ahead of coworkers who use images to do the same thing, and makes me competitive with excel wizards.It's a tool to put on a resume and apply when the workpalce demands it.
+
